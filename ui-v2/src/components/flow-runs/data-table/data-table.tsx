@@ -21,9 +21,11 @@ import { DurationCell } from "./duration-cell";
 import { NameCell } from "./name-cell";
 import { ParametersCell } from "./parameters-cell";
 import { StartTimeCell } from "./start-time-cell";
+import { TasksCell } from "./tasks-cell";
 
 export type FlowRunsDataTableRow = FlowRun & {
 	flow: Flow;
+	numTaskRuns?: number;
 	deployment?: Deployment;
 };
 
@@ -72,7 +74,17 @@ const createColumns = ({
 				return <DurationCell flowRun={flowRun} />;
 			},
 		}),
-
+		columnHelper.display({
+			id: "taskRuns",
+			header: "Task Runs",
+			cell: ({ row }) => {
+				const flowRun = row.original;
+				if (flowRun.state?.type === "SCHEDULED") {
+					return null;
+				}
+				return <TasksCell flowRun={flowRun} />;
+			},
+		}),
 		columnHelper.accessor("tags", {
 			id: "tags",
 			header: "Tags",
